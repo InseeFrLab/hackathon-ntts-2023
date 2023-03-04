@@ -3,7 +3,7 @@ import time
 import numpy as np
 from streamlit_utils import add_logos
 
-st.set_page_config(page_title="Plotting Demo", page_icon="📈")
+st.set_page_config(page_title="Plotting Demo", page_icon="🔎")
 
 add_logos()
 
