@@ -1,0 +1,6 @@
+bucket: "projet-hackathon-ntts-2023"
+
+sources:
+    data: data/ClientOutputMain_2022.csv
+    user: data/FableUserMaster.csv
+    merchant: data/MerchantHierarchyMaster.csv
