@@ -43,7 +43,7 @@ def add_logos():
 
 
 @st.cache_data(ttl=600)
-def read_csv(filename):
+def read_csv_s3(filename):
     """
     Read csv from Minio.
     """
@@ -53,7 +53,20 @@ def read_csv(filename):
 
 
 @st.cache_data(ttl=600)
+def read_csv(path):
+    df = pd.read_csv(path)
+    return df
+
+@st.cache_data(ttl=600)
 def read_html(filename):
+    """
+    Read html from local storage.
+    """
+    with open(filename, 'r') as f:
+        return f.read()
+
+@st.cache_data(ttl=600)
+def read_html_s3(filename):
     """
     Read html from Minio.
     """
