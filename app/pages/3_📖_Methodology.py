@@ -8,6 +8,8 @@ st.set_page_config(page_title="Methodology", page_icon="📖")
 
 st.title("📖 Methodology")
 
+add_logos()
+
 st.image('../hackathon-ntts-2023/logo_midjourney_no_background.png')
 
 st.markdown(

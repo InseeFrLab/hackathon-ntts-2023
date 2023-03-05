@@ -34,7 +34,7 @@ def add_logos():
                 margin-right: 10px;
                 margin-top: 50px;
                 padding-top: 120px;
-                background-size: contain;
+                background-size: 80%;
             }
         </style>
         """,

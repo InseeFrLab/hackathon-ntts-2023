@@ -6,7 +6,7 @@ st.set_page_config(
     page_icon="🇲🇫",
 )
 
-st.image('./banner_midjourney.png')
+st.image('./img/banner_midjourney.png')
 
 st.title("4C: Control credit card consumption :flag-mf:")
 
@@ -14,13 +14,19 @@ st.write("This application leverages granular card payments data to provide inte
 
 add_logos()
 
-st.write(
+st.markdown(
 """
 ### Authors
 - Hafid Chakir (Cartes Bancaires)
 - Florian Le Goff (Insee)
 - Lucas Malherbe (Insee)
+"""
+)
 
+st.image('https://imgtr.ee/images/2023/03/01/RiaxF.jpg', width = 370)
+
+st.markdown(
+"""
 ### Source code
 
 [Github repository](https://github.com/InseeFrLab/hackathon-ntts-2023)

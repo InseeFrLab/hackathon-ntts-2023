@@ -8,6 +8,8 @@ st.set_page_config(page_title="Roadmap", page_icon="🎯")
 
 st.title("🎯 Roadmap")
 
+add_logos()
+
 st.markdown(
 """
 This application is in its early stages. We plan to improve it in different ways.
