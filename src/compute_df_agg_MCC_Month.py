@@ -48,19 +48,15 @@ spark.sparkContext._jsc.hadoopConfiguration().set("fs.s3a.secret.key", os.enviro
 
 ### Load data from the s3 bucket
 
-MCC_groups = spark.read.csv("s3a://ecdataplatform-horizontal-read-only-bucket/Fable Data- MCC Groups.csv", sep = ";", header = True)
+df = spark.read.parquet("s3a://ecdataplatform-nsi-fr-results-bucket/data_pannel.parquet")
 
-df = spark.read.parquet("s3a://ecdataplatform-nsi-fr-results-bucket/filtered_data.parquet")
+df = df.filter(F.substring(F.col('TxnDate'), 1, 4) > "2017")
+df = df.filter(F.substring(F.col('TxnDate'), 1, 7) < "2023-02")
 
 df = df.withColumn('TxnMonth', F.substring(F.col('TxnDate'), 1, 7))
 
-df = (df.join(MCC_groups, df.MCC == MCC_groups.mcc, how = 'left')
-          .withColumnRenamed('MCC Group', 'MCCGroup')
-          .drop('mcc', 'Description')
-         )
-
 df_agg = (df
-      .groupby('MCCGroup', 'TxnMonth')
+      .groupby('MCC', 'TxnMonth')
       .agg(
           F.sum("Amount").alias("Amount"),
           F.count("TxnDate").alias("Nb_Txn")
