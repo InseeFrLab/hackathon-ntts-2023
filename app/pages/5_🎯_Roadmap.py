@@ -27,7 +27,7 @@ valuable information.
 
 ### Fine-tune alerts levels
 
-Currently, the alerts are based on 90\%, 95\% and 99\% confidence intervals. A more thorough 
+Currently, the alerts are based on 90%, 95% and 99% confidence intervals. A more thorough 
 analysis would help to fine tune these levels to ensure the rate of false alerts stays low while 
 minimizing missed anomalies.
 

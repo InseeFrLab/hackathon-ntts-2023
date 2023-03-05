@@ -26,9 +26,9 @@ MCC_G47 = mcc_aggregations.loc[mcc_aggregations['MCC_group2'] == "Retal trade (G
 MCC_I55 = mcc_aggregations.loc[mcc_aggregations['MCC_group2'] == "Accomodation (I55)", 'MCC'].tolist()
 MCC_I56 = mcc_aggregations.loc[mcc_aggregations['MCC_group2'] == "Food and Beverage (I56)", 'MCC'].tolist()
 
-country_chosen = st.radio("Choose a country", ['Germany', 'France', 'Austria', 'Spain'], horizontal=True)
+country_chosen_label = st.radio("Choose a country", ['Germany', 'France', 'Austria', 'Spain'], horizontal=True)
 dict_country = {'Germany': 'DE', 'France': 'FR', 'Austria': 'AT', 'Spain': 'ES'}
-country_chosen = dict_country[country_chosen]
+country_chosen = dict_country[country_chosen_label]
 
 amount = amount[amount['Merchantcountry'] == country_chosen]
 amount_panel = amount_panel[amount_panel['Merchantcountry'] == country_chosen]
@@ -126,7 +126,7 @@ else:
 
 merged_df = pd.concat(dfs_to_merge, ignore_index=True)
 
-merged_df = merged_df[merged_df["mois"] <= pd.Timestamp("2023-02-01")]
+merged_df = merged_df[merged_df["mois"] < pd.Timestamp("2023-02-01")]
 
 if metric_chosen == 'Total spend':
     merged_df = merged_df[merged_df["mois"] >= pd.Timestamp("2018-01-01")]
@@ -145,7 +145,7 @@ title_dict = {"Total spend": "Total spendings - Index with 2018 base = 100",
 "Month-on-month":"Month-on-month spending"
 }
 fig = px.line(merged_df, x="mois", y=metric_dict[metric_chosen], color="source", line_group="source",
-              hover_name="source", title=f"{title_dict[metric_chosen]} - {country_chosen}",
+              hover_name="source", title=f"{title_dict[metric_chosen]} - {country_chosen_label}",
               labels={"mois": "Month", "indice": "Index, 2018 = 100",
                       "source": "Data", "year_on_year": "YoY", "month_on_month": "MoM"})
 

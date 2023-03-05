@@ -7,4 +7,4 @@ AWS_SECRET_ACCESS_KEY=`vault kv get -field=SECRET_KEY onyxia-kv/projet-hackathon
 unset AWS_SESSION_TOKEN
 export MC_HOST_s3=https://$AWS_ACCESS_KEY_ID:$AWS_SECRET_ACCESS_KEY@$AWS_S3_ENDPOINT
 
-streamlit run app/🇲🇫4C_Home_page.py
+streamlit run app/🇫🇷4C_Home_page.py

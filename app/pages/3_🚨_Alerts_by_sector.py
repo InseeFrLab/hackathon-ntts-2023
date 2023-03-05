@@ -13,7 +13,9 @@ st.title("🚨 Warning system: Alerts by sectors")
 add_logos()
 
 
-df_agg = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly.csv")
+df_agg = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly_3levels.csv")
+#df_95 = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly95.csv")
+#df_99 = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly95.csv")
 
 df_agg['TxnMonth'] = pd.to_datetime(df_agg['TxnMonth'])
 
@@ -69,11 +71,58 @@ df_agg_single_MCC = df_agg[df_agg['MCCGroup'] == chosen_MCC]
 fig = px.line(df_agg_single_MCC.sort_values("TxnMonth"), x="TxnMonth", y="Amount", 
 title=f'Total spend amount - {chosen_MCC}')
 
-df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] != 0].copy()
-df_filtered['anomaly'] = df_filtered['anomaly'].astype(str)
+#99% anomalies
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == 3]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['red']).data[0])
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == -3]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['red']).data[0])
 
-# add markers only for points where anomaly is True
-fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color='anomaly', color_discrete_map={"2": 'blue', "1": 'red', "-1": 'red', "-2": 'purple'}).data[0])
+#fig.add_trace(px.scatter(df_agg_single_MCC, x='TxnMonth', y='Amount', color='anomaly').data[0])
+
+#99% confidence intervals
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_upper99'],
+                    line = dict(color='rgba(255,0,0,0.4)', dash='dash')))
+
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_lower99'],
+                    line = dict(color='rgba(255,0,0,0.4)', dash='dash')))
+
+# 95% anomalies
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == 2]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['orange']).data[0])
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == -2]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['orange']).data[0])
+
+# 95% confidence intervals
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_upper95'],
+                    line = dict(color='rgba(255,69,0, 0.4)', dash='dash')))
+
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_lower95'],
+                    line = dict(color='rgba(255,69,0, 0.4)', dash='dash')))
+
+# 90% anomalies
+
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == 1]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['yellow']).data[0])
+df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == -1]
+fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['yellow']).data[0])
+
+# 90% confidence intervals
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_upper90'],
+                    line = dict(color='rgba(204,204,0, 0.4)', dash='dash')))
+
+fig.add_trace(go.Scatter(x=df_agg_single_MCC['TxnMonth'], y=df_agg_single_MCC['yhat_lower90'],
+                    line = dict(color='rgba(204,204,0, 0.4)', dash='dash')))
+
+
+#df_95['TxnMonth'] = pd.to_datetime(df_95['TxnMonth'])
+#df_agg_single_MCC = df_agg[df_agg['MCCGroup'] == chosen_MCC]
+
+#df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == 1]
+#fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['orange']).data[0])
+#df_filtered = df_agg_single_MCC[df_agg_single_MCC['anomaly'] == -1]
+#fig.add_trace(px.scatter(df_filtered, x='TxnMonth', y='Amount', color_discrete_sequence=['orange']).data[0])
+
+
 fig.update_traces(showlegend=False, marker={'size': 8})
 
 st.plotly_chart(fig, theme="streamlit", use_container_width=True)

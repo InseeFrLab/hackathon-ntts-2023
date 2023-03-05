@@ -10,8 +10,6 @@ st.title("📖 Methodology")
 
 add_logos()
 
-st.image('../hackathon-ntts-2023/logo_midjourney_no_background.png')
-
 st.markdown(
 """
 ## Panel composition
@@ -26,7 +24,7 @@ Our alert triggering strategy is based on a time series analysis model with,
 available in an open source library called prophet. This approach overcomes the limitations of fixed thresholds
 
 To detect anomalies in a given time series, a model is fit on the series with seasonal adjustment. 
-The model generates uncertainty intervals with different levels, and alerts are triggered when the data fall outside these confidence intervals.
+The model generates uncertainty intervals with different levels (90%, 95%, and 99%), and alerts are triggered when the data fall outside these confidence intervals.
 
 ## Tools
 
