@@ -6,9 +6,9 @@ import plotly.graph_objs as go
 import numpy as np
 
 
-st.set_page_config(page_title="Alerts by sector", page_icon="📈")
+st.set_page_config(page_title="Alerts by sector", page_icon="🚨")
 
-st.title("📈 Warning system: Alerts by sectors")
+st.title("🚨 Warning system: Alerts by sectors")
 
 add_logos()
 
