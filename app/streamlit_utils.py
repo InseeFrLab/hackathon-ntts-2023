@@ -28,7 +28,7 @@ def add_logos():
         """
         <style>
             [data-testid="stSidebarNav"] {
-                background-image: url(https://imgtr.ee/images/2023/03/01/RiaxF.jpg);
+                background-image: url(https://imgtr.ee/images/2023/03/05/oUTs3.png);
                 background-repeat: no-repeat;
                 margin-left: 10px;
                 margin-right: 10px;
