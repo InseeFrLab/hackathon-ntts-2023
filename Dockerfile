@@ -15,6 +15,7 @@ RUN apt-get update && apt-get install -y \
 USER appuser
 WORKDIR /home/appuser
 
+COPY img/ /home/appuser/img/
 COPY app/ /home/appuser/app/
 
 ENV VIRTUAL_ENV=/home/appuser/venv
