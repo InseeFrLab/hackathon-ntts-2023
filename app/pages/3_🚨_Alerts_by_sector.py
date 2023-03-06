@@ -5,6 +5,7 @@ import pandas as pd
 import plotly.graph_objs as go
 import numpy as np
 import datetime
+import emoji
 
 st.set_page_config(page_title="Alerts by sector", page_icon="🚨")
 
@@ -14,23 +15,34 @@ add_logos()
 
 
 df_agg = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly_3levels.csv")
+df_covid = read_csv_s3("projet-hackathon-ntts-2023/data-hackathon/data_agg_MCC_Month_anomaly_3levels_covid.csv")
 
-df_agg['TxnMonth'] = pd.to_datetime(df_agg['TxnMonth'])
+st.cache(ttl=600)
+def preprocess_df_agg(df_agg):
+    df_agg['TxnMonth'] = pd.to_datetime(df_agg['TxnMonth'])
+    df_agg['Alert level'] = ""
+    df_agg['Up or Down'] = ""
+    df_agg.loc[df_agg['anomaly'].isin([-3, 3]), 'Alert level'] = "3 - Severe"
+    df_agg.loc[df_agg['anomaly'].isin([-2, 2]), 'Alert level'] = "2 - High"
+    df_agg.loc[df_agg['anomaly'].isin([-1, 1]), 'Alert level'] = "1 - Medium"
+    df_agg.loc[df_agg['anomaly']>0, 'Up or Down'] = f"Up {emoji.emojize(':up-right_arrow:')}"
+    df_agg.loc[df_agg['anomaly']<0, 'Up or Down'] = f"Down {emoji.emojize(':down-right_arrow:')}"
+    return df_agg
 
-df_agg['Alert level'] = ""
-df_agg['Up or Down'] = ""
-df_agg.loc[df_agg['anomaly'].isin([-3, 3]), 'Alert level'] = "3 - Severe"
-df_agg.loc[df_agg['anomaly'].isin([-2, 2]), 'Alert level'] = "2 - High"
-df_agg.loc[df_agg['anomaly'].isin([-1, 1]), 'Alert level'] = "1 - Medium"
-df_agg.loc[df_agg['anomaly']>0, 'Up or Down'] = "Up"
-df_agg.loc[df_agg['anomaly']<0, 'Up or Down'] = "Down"
+preprocess_df_agg(df_agg)
+preprocess_df_agg(df_covid)
+
+covid_correction = st.checkbox('Covid Correction')
 
 chosen_MCC = st.selectbox(
     'Sector',
     df_agg[['MCCGroup', 'Amount']].groupby('MCCGroup').sum('Amount').sort_values('Amount', ascending = False).index
 )
 
-df_agg_single_MCC = df_agg.loc[df_agg['MCCGroup'] == chosen_MCC, :]
+if covid_correction:
+    df_agg_single_MCC = df_covid.loc[df_covid['MCCGroup'] == chosen_MCC, :]
+else:
+    df_agg_single_MCC = df_agg.loc[df_agg['MCCGroup'] == chosen_MCC, :]
 
 #st.line_chart(df_agg_single_MCC[['TxnMonth', 'Amount']], x='TxnMonth', y='Amount')
 
@@ -140,17 +152,15 @@ fig.update_traces(showlegend=False, marker={'size': 8})
 st.plotly_chart(fig, theme="streamlit", use_container_width=True)
 
 
-
 df_agg_single_MCC_anomaly = df_agg_single_MCC.loc[df_agg_single_MCC['anomaly']!=0, ['TxnMonth', 'Alert level', 'Up or Down']]
 df_agg_single_MCC_anomaly = df_agg_single_MCC_anomaly.rename(columns = {'TxnMonth': 'Month'})
-df_agg_single_MCC_anomaly["Month"] = df_agg_single_MCC_anomaly["Month"].astype(str)
 
 st.markdown(f"""
 ### Alerts for {chosen_MCC}
 """
 )
 
-#Checkboxes for confidence intervals
+# Checkboxes for confidence intervals
 col1, col2, col3, col4, col5 = st.columns([1.5, 1, 0.77, 1, 2])
 
 with col1:
@@ -162,7 +172,6 @@ with col3:
 with col4:
     Severe = st.checkbox('Severe', value = True)
 
-
 if not Medium:
     df_agg_single_MCC_anomaly = df_agg_single_MCC_anomaly.loc[df_agg_single_MCC_anomaly["Alert level"]!="1 - Medium", :]
 if not High:
@@ -170,15 +179,31 @@ if not High:
 if not Severe:
     df_agg_single_MCC_anomaly = df_agg_single_MCC_anomaly.loc[df_agg_single_MCC_anomaly["Alert level"]!="3 - Severe", :]
 
-st.write(df_agg_single_MCC_anomaly)
+def highlight_cells(value):
+    if value == '1 - Medium':
+        color = '#e2d027' # Yellow
+    elif value == '2 - High':
+        color ="#dd8625" # Orange
+    elif value == '3 - Severe':
+        color = '#cf3b00'
+    return 'background-color: {}'.format(color)
 
-st.markdown("## All MCCs in alert")
+df_agg_single_MCC_anomaly['Month'] = df_agg_single_MCC_anomaly['Month'].dt.strftime('%B %Y')
+
+st.dataframe(df_agg_single_MCC_anomaly.reset_index(drop=True).style.applymap(highlight_cells, subset=['Alert level']))
+
+st.markdown("## All Sectors in alert")
 
 year = st.selectbox('Year', range(2018, 2024))
 
 month = st.selectbox('Month', range(1, 13))
 
-df_agg = df_agg.loc[(df_agg["anomaly"]!=0) & (df_agg['TxnMonth'] == pd.Timestamp(f"{year}-{month}-01")), ['TxnMonth', 'MCCGroup', 'Alert level', 'Up or Down']]
-df_agg = df_agg.rename(columns = {'TxnMonth': 'Month', 'MCCGroup': 'Sector'})
+if covid_correction:
+    df_all_MCCs = df_covid.loc[(df_covid["anomaly"]!=0) & (df_covid['TxnMonth'] == pd.Timestamp(f"{year}-{month}-01")), ['TxnMonth', 'MCCGroup', 'Alert level', 'Up or Down']]
+else:
+    df_all_MCCs = df_agg.loc[(df_agg["anomaly"]!=0) & (df_agg['TxnMonth'] == pd.Timestamp(f"{year}-{month}-01")), ['TxnMonth', 'MCCGroup', 'Alert level', 'Up or Down']]
 
-st.dataframe(df_agg)
+df_all_MCCs = df_all_MCCs.rename(columns = {'TxnMonth': 'Month', 'MCCGroup': 'Sector'})
+df_all_MCCs['Month'] = df_all_MCCs['Month'].dt.strftime('%B %Y')
+
+st.dataframe(df_all_MCCs.reset_index(drop=True).style.applymap(highlight_cells, subset=['Alert level']))

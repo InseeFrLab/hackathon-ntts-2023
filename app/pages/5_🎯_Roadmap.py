@@ -33,16 +33,20 @@ minimizing missed anomalies.
 
 ### Use daily data to trigger alerts
 
-Our current alert triggering mechanism relies on monthly aggregated data. We could leverage the 
-power the daily data by running the anomaly detection on daily data and define a new strategy 
-to trigger alerts, for instance when several consecutive days are considered anormal.
+Our current alert triggering mechanism relies on monthly aggregated data. We could leverage the full
+power of the data granularity by running the anomaly detection on daily data and define a new strategy 
+to trigger alerts, for instance when several days are considered anormal in a window of a given size.
 
 ### Trigger alerts on a more granular geographical level
 
 Using the same methodology, alerts could be triggered when changes are detected at regional level for instance.
 
+### Provide more visualisation options
 
-
+Providing more visualisation options would be valuable to a policy maker using the application, 
+making it easier to understand the cause of the alerts triggered.
+Useful visualisation features include a decomposition of the indicators by age group and a map 
+showing the evolution of the indicators at a regional level.
 
 """
 )

@@ -5,3 +5,4 @@ numpy
 pandas
 time
 datetime
+emoji
