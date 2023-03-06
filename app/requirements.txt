@@ -1,2 +1,7 @@
 streamlit
 s3fs
+plotly
+numpy
+pandas
+time
+datetime
