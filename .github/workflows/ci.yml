@@ -34,7 +34,7 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           context: .
-          file: ./Dockerfile-maweb
+          file: ./Dockerfile
           push: ${{ github.event_name != 'pull_request' }}
           # Use tags computed before and also latest if on master
           tags: |
